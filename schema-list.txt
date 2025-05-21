@@ -1,0 +1,346 @@
+🧩 Core Models for Multi-Vendor E-commerce
+1. User
+id
+
+name
+
+email
+
+password
+
+phone
+
+address
+
+role (e.g., buyer, vendor, admin)
+
+created_at, updated_at
+
+2. Vendor
+id
+
+user_id (FK to User)
+
+store_name
+
+store_description
+
+store_logo
+
+store_banner
+
+status (e.g., active, suspended)
+
+created_at, updated_at
+
+3. Category
+id
+
+name
+
+slug
+
+parent_id (FK to Category, for nested categories)
+
+created_at, updated_at
+
+4. Product
+id
+
+vendor_id (FK to Vendor)
+
+category_id (FK to Category)
+
+name
+
+slug
+
+description
+
+price
+
+discount_price
+
+stock_quantity
+
+status (e.g., published, draft)
+
+created_at, updated_at
+
+5. ProductImage
+id
+
+product_id (FK to Product)
+
+image_url
+
+alt_text
+
+is_primary (boolean)
+
+6. ProductVariant
+id
+
+product_id (FK to Product)
+
+variant_name (e.g., Size, Color)
+
+variant_value (e.g., Large, Red)
+
+🛒 Shopping & Orders
+7. Cart
+id
+
+user_id (FK to User)
+
+created_at, updated_at
+
+8. CartItem
+id
+
+cart_id (FK to Cart)
+
+product_id (FK to Product)
+
+quantity
+
+9. Order
+id
+
+user_id (FK to User)
+
+total_amount
+
+shipping_address
+
+billing_address
+
+status (e.g., pending, paid, shipped, cancelled)
+
+payment_status
+
+created_at, updated_at
+
+10. OrderItem
+id
+
+order_id (FK to Order)
+
+product_id (FK to Product)
+
+vendor_id (FK to Vendor)
+
+quantity
+
+price
+
+💳 Payments & Shipping
+11. Payment
+id
+
+order_id (FK to Order)
+
+payment_method
+
+payment_status
+
+transaction_id
+
+paid_at
+
+12. Shipping
+id
+
+order_id (FK to Order)
+
+shipping_method
+
+tracking_number
+
+shipping_status
+
+shipped_at, delivered_at
+
+💬 Reviews & Ratings
+13. Review
+id
+
+user_id (FK to User)
+
+product_id (FK to Product)
+
+rating (e.g., 1 to 5)
+
+review_text
+
+created_at
+
+🛠 Admin/Backend
+14. Admin
+id
+
+user_id (FK to User)
+
+permissions
+
+15. Payout
+id
+
+vendor_id (FK to Vendor)
+
+amount
+
+status (e.g., pending, paid)
+
+payout_date
+
+Optional / Advanced
+Coupon / Discount
+
+Wishlist
+
+Notifications
+
+Audit Logs
+
+Vendor Ratings
+
+Activity Logs
+
+
+
+
+
+
+
+
+
+
+//////////////////////////
+ER-Diagram
+///////////////////////////
+
+User
+ ├── id (PK)
+ ├── name, email, password, role
+ └── has_one → Vendor
+
+Vendor
+ ├── id (PK)
+ ├── user_id (FK → User)
+ ├── store_name, status
+
+Category
+ ├── id (PK)
+ ├── name, parent_id (FK → Category)
+
+Product
+ ├── id (PK)
+ ├── vendor_id (FK → Vendor)
+ ├── category_id (FK → Category)
+ └── has_many → ProductImage, ProductVariant
+
+ProductImage
+ ├── id (PK)
+ ├── product_id (FK → Product)
+
+ProductVariant
+ ├── id (PK)
+ ├── product_id (FK → Product)
+
+Cart
+ ├── id (PK)
+ ├── user_id (FK → User)
+
+CartItem
+ ├── id (PK)
+ ├── cart_id (FK → Cart)
+ ├── product_id (FK → Product)
+
+Order
+ ├── id (PK)
+ ├── user_id (FK → User)
+ └── has_many → OrderItem
+
+OrderItem
+ ├── id (PK)
+ ├── order_id (FK → Order)
+ ├── product_id (FK → Product)
+ ├── vendor_id (FK → Vendor)
+
+Payment
+ ├── id (PK)
+ ├── order_id (FK → Order)
+
+Shipping
+ ├── id (PK)
+ ├── order_id (FK → Order)
+
+Review
+ ├── id (PK)
+ ├── user_id (FK → User)
+ ├── product_id (FK → Product)
+
+Payout
+ ├── id (PK)
+ ├── vendor_id (FK → Vendor)
+
+Admin
+ ├── id (PK)
+ ├── user_id (FK → User)
+
+
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+Django models
+/////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+# users/models.py
+from django.contrib.auth.models import AbstractUser
+from django.db import models
+
+class User(AbstractUser):
+    ROLE_CHOICES = [('buyer', 'Buyer'), ('vendor', 'Vendor'), ('admin', 'Admin')]
+    role = models.CharField(max_length=10, choices=ROLE_CHOICES)
+
+class Vendor(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    store_name = models.CharField(max_length=255)
+    store_description = models.TextField(blank=True)
+    store_logo = models.ImageField(upload_to='vendors/logos/', blank=True)
+    status = models.CharField(max_length=20, default='active')
+
+# catalog/models.py
+class Category(models.Model):
+    name = models.CharField(max_length=255)
+    slug = models.SlugField(unique=True)
+    parent = models.ForeignKey('self', null=True, blank=True, on_delete=models.SET_NULL)
+
+class Product(models.Model):
+    vendor = models.ForeignKey(Vendor, on_delete=models.CASCADE)
+    category = models.ForeignKey(Category, on_delete=models.SET_NULL, null=True)
+    name = models.CharField(max_length=255)
+    slug = models.SlugField(unique=True)
+    description = models.TextField()
+    price = models.DecimalField(max_digits=10, decimal_places=2)
+    discount_price = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
+    stock_quantity = models.IntegerField()
+
+class ProductImage(models.Model):
+    product = models.ForeignKey(Product, related_name='images', on_delete=models.CASCADE)
+    image_url = models.ImageField(upload_to='products/')
+    is_primary = models.BooleanField(default=False)
+
+# orders/models.py
+class Order(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    total_amount = models.DecimalField(max_digits=10, decimal_places=2)
+    status = models.CharField(max_length=20, default='pending')
+
+class OrderItem(models.Model):
+    order = models.ForeignKey(Order, on_delete=models.CASCADE)
+    product = models.ForeignKey(Product, on_delete=models.SET_NULL, null=True)
+    vendor = models.ForeignKey(Vendor, on_delete=models.CASCADE)
+    quantity = models.PositiveIntegerField()
+    price = models.DecimalField(max_digits=10, decimal_places=2)
