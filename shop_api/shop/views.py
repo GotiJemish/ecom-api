@@ -93,5 +93,3 @@ class AdminLoginView(TokenObtainPairView):
     serializer_class = type('AdminTokenSerializer', (RoleBasedTokenSerializer,), {
         'expected_role': 'admin'
     })
-
-print("hello")
