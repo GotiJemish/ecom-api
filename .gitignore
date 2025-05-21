@@ -1,0 +1,20 @@
+# Django
+*.pyc
+__pycache__/
+db.sqlite3
+/static/
+/media/
+
+# Environment
+.env
+
+# IDEs
+.vscode/
+.idea/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Migrations (optional, but you may keep them)
+*/migrations/__pycache__/
