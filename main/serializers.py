@@ -46,7 +46,7 @@ class CategoryDetailSerializer(serializers.ModelSerializer):
         # depth = 1
          
     def __init__(self, *args, **kwargs):
-        super(VendorDetailSerializer, self).__init__(*args, **kwargs)
+        super(CategoryDetailSerializer, self).__init__(*args, **kwargs)
         # request = self.context.get('request', None)
         # self.Meta.depth = 1 
    
