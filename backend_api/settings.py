@@ -11,7 +11,10 @@ https://docs.djangoproject.com/en/5.2/ref/settings/
 """
 
 from pathlib import Path
-
+import psycopg2
+import dj_database_url
+import os
+from dotenv import load_dotenv
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -76,16 +79,25 @@ WSGI_APPLICATION = 'backend_api.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
 
+# Load environment variables from .env
+load_dotenv()
+
+
+
+
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'multivendor_ecommerce',
-        'USER':'postgres',
-        'PASSWORD': '148545',
-        'HOST':'localhost',
+        'NAME': os.getenv("DBNAME", "postgres"),
+        'USER': os.getenv("USER", "postgres"),
+        'PASSWORD': os.getenv("PASSWORD", "148545"),
+        'HOST': os.getenv("HOST", "db.zochizrdxcmlsxqbtzia.supabase.co"),
+        'PORT': os.getenv("PORT", "5432"),
+        'OPTIONS': {
+            'sslmode': 'require',
+        },
     }
 }
-
 
 
 
@@ -147,3 +159,6 @@ CORS_ALLOWED_ORIGINS = [
 ]
 
 CORS_ALLOW_CREDENTIALS = True  # ⚠️ Use with caution
+
+
+
