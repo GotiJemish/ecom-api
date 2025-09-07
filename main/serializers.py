@@ -38,7 +38,6 @@ class CategorySerializer(serializers.ModelSerializer):
         # request = self.context.get('request', None)
         # self.Meta.depth = 1 
         
-        
 class CategoryDetailSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.Category # specify the model to be serialized
@@ -47,8 +46,8 @@ class CategoryDetailSerializer(serializers.ModelSerializer):
          
     def __init__(self, *args, **kwargs):
         super(CategoryDetailSerializer, self).__init__(*args, **kwargs)
-        # request = self.context.get('request', None)
-        # self.Meta.depth = 1 
+        request = self.context.get('request', None)
+        self.Meta.depth = 1 
    
         
 # product serializers
@@ -72,7 +71,7 @@ class ProductDetailSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = models.Product # specify the model to be serialized
-        fields = [ 'id', 'title', 'description','price','category','product_reviews' ]
+        fields = [ 'id', 'title', 'description','price','category','vendor','product_reviews' ]
         depth = 1
          
     def __init__(self, *args, **kwargs):

@@ -18,8 +18,8 @@ urlpatterns = [
 path('vendors/', views.VendorList.as_view(), name='vendor-list'), # vendor list view
 path('vendor/<int:pk>/', views.VendorDetail.as_view(), name='vendor-detail'), # vendor details view
 # products
-path('products/', views.ProductList.as_view(), name='product-list'), # vendor list view
-path('product/<int:pk>/', views.ProductDetail.as_view(), name='product-detail'), # vendor details view
+path('products/', views.ProductList.as_view(), name='product-list'), # product list view
+path('product/<int:pk>/', views.ProductDetail.as_view(), name='product-detail'), # product details view
 # categories
 path('categories/', views.CategoryList.as_view(), name='category-list'), # category list view
 path('category/<int:pk>/', views.CategoryDetail.as_view(), name='category-detail'), # category details view

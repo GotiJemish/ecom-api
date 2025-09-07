@@ -16,13 +16,27 @@ class VendorDetail(generics.RetrieveUpdateDestroyAPIView):
     serializer_class = serializers.VendorDetailSerializer   # specify the serializers class to be used for serialization
     # permission_classes=[permissions.IsAuthenticated]
     
-#  product list view
+# product list view
 class ProductList(generics.ListCreateAPIView):
-    queryset = models.Product.objects.all() # get all products
-    serializer_class = serializers.ProductListSerializer   # specify the serializers class to be used for serialization
-     # permission_classes=[permissions.IsAuthenticated]
-    # pagination_class=pagination.LimitOffsetPagination  # using this we can apply different pagination then whole application default pagination
-     
+    queryset = models.Product.objects.all()  # get all products
+    serializer_class = serializers.ProductListSerializer  # specify the serializer class to be used
+    # permission_classes = [permissions.IsAuthenticated]
+    # pagination_class = pagination.LimitOffsetPagination
+
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        category_id = self.request.GET.get('category')  # safely get category from query params
+
+        if category_id:  # only filter if category is provided
+            try:
+                cat = models.Category.objects.get(id=category_id)
+                queryset = queryset.filter(category=cat)
+            except models.Category.DoesNotExist:
+                queryset = queryset.none()  # or raise a 404 if you prefer
+
+        return queryset
+
+
 
 # product detail view
 class ProductDetail(generics.RetrieveUpdateDestroyAPIView):
@@ -42,7 +56,7 @@ class CategoryList(generics.ListCreateAPIView):
 
 # category detail view
 class CategoryDetail(generics.RetrieveUpdateDestroyAPIView):
-    queryset = models.Product.objects.all() # get all vendors
+    queryset = models.Category.objects.all() # get all vendors
     serializer_class = serializers.CategoryDetailSerializer   # specify the serializers class to be used for serialization
     # permission_classes=[permissions.IsAuthenticated]   
     
