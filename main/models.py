@@ -2,6 +2,8 @@ from django.db import models
 from django.contrib.auth.models import User
 from django.utils.text import slugify
 from django.core.validators import MinValueValidator, MaxValueValidator
+from versatileimagefield.fields import VersatileImageField
+
 
 # vendor models
 class Vendor(models.Model):
@@ -95,4 +97,11 @@ class ProductReview(models.Model):
     def __str__(self):
         return f"{self.rating} - {self.comment[:50]}" # return first 50 characters of comment
     
-    
+# Product Images models
+class ProductImages(models.Model):
+    product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name="products_images")
+    image = VersatileImageField(upload_to='products_imgs/',null=True)
+
+    def __str__(self):
+        return f"{self.product}"
+    # {self.city}, {self.state}, {self.country}

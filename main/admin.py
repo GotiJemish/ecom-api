@@ -10,3 +10,6 @@ admin.site.register(models.OrderItem)
 admin.site.register(models.CustomerAddress)
 admin.site.register(models.ProductReview)
 
+# product image
+admin.site.register(models.ProductImages)
+

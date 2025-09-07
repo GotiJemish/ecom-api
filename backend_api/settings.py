@@ -89,7 +89,7 @@ load_dotenv()
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': os.getenv("DBNAME", "postgres"),
+        'NAME': os.getenv("DBNAME", "e_commerce"),
         'USER': os.getenv("USER", "postgres"),
         'PASSWORD': os.getenv("PASSWORD", "148545"),
         'HOST': os.getenv("HOST", "db.zochizrdxcmlsxqbtzia.supabase.co"),
