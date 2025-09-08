@@ -1,9 +1,14 @@
+import os
+import uuid
+from PIL import Image
+from io import BytesIO
+from django.core.files.base import ContentFile
 from django.db import models
 from django.contrib.auth.models import User
 from django.utils.text import slugify
 from django.core.validators import MinValueValidator, MaxValueValidator
 from versatileimagefield.fields import VersatileImageField
-
+from django.core.validators import FileExtensionValidator
 
 # vendor models
 class Vendor(models.Model):
@@ -100,8 +105,43 @@ class ProductReview(models.Model):
 # Product Images models
 class ProductImages(models.Model):
     product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name="products_images")
-    image = VersatileImageField(upload_to='products_imgs/',null=True)
+    image = VersatileImageField(upload_to='products_imgs/',null=True,validators=[FileExtensionValidator(allowed_extensions=['jpg', 'jpeg', 'png', 'webp'])])
+    def save(self, *args, **kwargs):
+        # Only process if image exists and it's a new image or being updated
+        if self.image:
+            # Open the image using Pillow
+            img = Image.open(self.image)
+
+            # Convert image to RGB if it's not already (e.g., for PNGs with alpha)
+            if img.mode in ("RGBA", "P"):
+                img = img.convert("RGB")
+
+            # Get original dimensions
+            width, height = img.size
+
+            # Calculate crop box for center crop to 1:1 ratio
+            min_side = min(width, height)
+            left = (width - min_side) // 2
+            top = (height - min_side) // 2
+            right = left + min_side
+            bottom = top + min_side
+            # Crop the image to square
+            img = img.crop((left, top, right, bottom))
+
+
+            # Create a filename
+            filename = f"{uuid.uuid4().hex}.webp"
+
+            # Save to a BytesIO stream in webp format
+            buffer = BytesIO()
+            img.save(buffer, format='WEBP', quality=100)  # Adjust quality as needed
+            buffer.seek(0)
+
+            # Replace the image file
+            self.image.save(filename, ContentFile(buffer.read()), save=False)
+
+        super().save(*args, **kwargs)
+
 
     def __str__(self):
         return f"{self.product}"
-    # {self.city}, {self.state}, {self.country}
