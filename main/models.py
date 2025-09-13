@@ -144,4 +144,4 @@ class ProductImages(models.Model):
 
 
     def __str__(self):
-        return f"{self.product}"
+        return f"{self.image.url}"

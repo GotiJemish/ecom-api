@@ -82,23 +82,38 @@ WSGI_APPLICATION = 'backend_api.wsgi.application'
 
 # Load environment variables from .env
 load_dotenv()
-
-
+# print("DBNAME:", os.getenv("DBNAME"))
+# print("USER:", os.getenv("DB_USER"))
+# print("PASSWORD:", os.getenv("PASSWORD"))
+# print("HOST:", os.getenv("HOST"))
 
 
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': os.getenv("DBNAME", "e_commerce"),
-        'USER': os.getenv("USER", "postgres"),
-        'PASSWORD': os.getenv("PASSWORD", "148545"),
-        'HOST': os.getenv("HOST", "db.zochizrdxcmlsxqbtzia.supabase.co"),
-        'PORT': os.getenv("PORT", "5432"),
-        'OPTIONS': {
-            'sslmode': 'require',
-        },
+        'NAME': os.getenv("DBNAME"),
+        'USER': os.getenv("DB_USER"),
+        'PASSWORD': os.getenv("PASSWORD"),
+        'HOST': os.getenv("HOST"),
+        'PORT': os.getenv("PORT"),
     }
 }
+
+
+
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.postgresql',
+#         'NAME': os.getenv("DBNAME", "postgres"),
+#         'USER': os.getenv("USER", "postgres"),
+#         'PASSWORD': os.getenv("PASSWORD", "Jemish@148545"),
+#         'HOST': os.getenv("HOST", "db.zochizrdxcmlsxqbtzia.supabase.co"),
+#         'PORT': os.getenv("PORT", "5432"),
+#         'OPTIONS': {
+#             'sslmode': 'require',
+#         },
+#     }
+# }
 
 
 
@@ -155,11 +170,14 @@ REST_FRAMEWORK = {
     'DEFAULT_PAGINATION_CLASS': 'main.pagination.CustomPagination', # this is for custom pagination class
     'PAGE_SIZE': 10
 }
+
+MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:3000",  # Your frontend URL
 ]
 
 CORS_ALLOW_CREDENTIALS = True  # ⚠️ Use with caution
-
 
 

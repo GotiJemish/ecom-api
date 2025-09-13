@@ -53,6 +53,7 @@ class CategoryDetailSerializer(serializers.ModelSerializer):
 # product serializers
 class ProductListSerializer(serializers.ModelSerializer):
     product_reviews = serializers.StringRelatedField(many=True, read_only=True)
+
     class Meta:
         model = models.Product # specify the model to be serialized
         # fields = '__all__'
@@ -63,15 +64,24 @@ class ProductListSerializer(serializers.ModelSerializer):
         # request = self.context.get('request', None)
         # self.Meta.depth = 1 
 
+#  product image serializers
+class ProductImageSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = models.ProductImages
+        fields =["id", "product", "image" ]
+        # depth = 1
+
+
 class ProductDetailSerializer(serializers.ModelSerializer):
     product_reviews = serializers.StringRelatedField(many=True, read_only=True)   # to get the product reviews in the product details
     category=CategorySerializer(read_only=True) # to get the cateory details in the product details
     vendor=VendorSerializer(read_only=True)
+    products_images=ProductImageSerializer(many=True, read_only=True)
     # customer_reviews = ProductReviewSerializer(many=True, read_only=True)
 
     class Meta:
         model = models.Product # specify the model to be serialized
-        fields = [ 'id', 'title', 'description','price','category','vendor','product_reviews' ]
+        fields = [ 'id', 'title', 'description','price','category','vendor','product_reviews','products_images' ]
         depth = 1
          
     def __init__(self, *args, **kwargs):
@@ -145,3 +155,4 @@ class ProductReviewSerializer(serializers.ModelSerializer):
     
     def __init__(self, *args, **kwargs):
         super(ProductReviewSerializer, self).__init__(*args, **kwargs)
+
