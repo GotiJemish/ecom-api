@@ -42,6 +42,7 @@ class Product(models.Model):
     price=models.DecimalField(max_digits=10, decimal_places=2) # price is a decimal field with 10 digits and 2 decimal places
     category=models.ForeignKey(Category, on_delete=models.SET_NULL, null=True, related_name='category_products') # if we delete category it will make category null in all products in that category
     vendor=models.ForeignKey(Vendor, on_delete=models.SET_NULL, null=True) 
+    tags=models.TextField(null=True)
     
     def save(self, *args, **kwargs):
         if not self.slug:
@@ -50,6 +51,9 @@ class Product(models.Model):
 
     def __str__(self):
         return self.title # __str__ method is used to return the title of the product when we print the object or in the admin panel
+
+    def tag_list(self):
+        return self.tags.split(",") if self.tags else []
 
 # customer models
 
